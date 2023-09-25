@@ -4,7 +4,13 @@ module.exports = {
   theme: {
     extend: {
       brightness: {},
-      colors: {},
+      colors:{
+        'layout':'#F7F8FA',
+        'btn-active':'#E3F2FD'
+      },
+      boxShadow: {
+        'sm': '0px 0px 4px 0px rgba(0, 0, 0, 0.2)',
+      }
     },
   },
   plugins: [],
