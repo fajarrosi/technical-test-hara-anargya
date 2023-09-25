@@ -5,6 +5,7 @@ import App from "./App.vue";
 import { Icon } from "@iconify/vue";
 import router from './router';
 import "./card.css"
+import "./transition.css"
 
 const app = createApp(App)
 app.use(router)
