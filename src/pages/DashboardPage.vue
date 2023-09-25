@@ -1,6 +1,7 @@
 <script setup>
 import { getIcon } from '@/methods/GeneralMethods';
 import { ref } from 'vue'
+import AppDialog from '../components/AppDialog.vue';
 const cards = ref([
   { status: 'Pending', total:'2.480,30', percentage:'2,15',isincrease:true,date:'Last Month'},
   { status: 'Paid', total:'84.310,0',percentage:'1,10',isincrease:false,date:'Last Month'},
@@ -108,13 +109,9 @@ const getImage = name => {
     </div>
   </div>
 
-  <div class="fixed top-0 bottom-0 left-0 right-0 z-20 bg-dialog p-6 flex items-center justify-center" :class="show ? '' : 'hidden'">
-    <Transition name="bounce">
-      <div class="bg-white rounded shadow-sm card" v-if="show">
-        <div class="flex justify-end pr-2 pt-3">
-          <Icon icon="material-symbols:close" class="cursor-pointer font-medium text-red-500" @click.stop="show = false"/>
-        </div>
-        <div class="gap-x-8 px-9 py-[26px]">
+  <AppDialog v-model:show-dialog="show" title-dialog="User Detail">
+    <template #default>
+      <div class="gap-x-8 px-9 py-[26px]">
           <div class="flex mb-8">
             <img :src="getImage('test.png')" class="rounded-full w-[150px] h-[150px]">
             <div class="flex flex-col text-black-300 items-center">
@@ -134,15 +131,8 @@ const getImage = name => {
               </tr>
             </tbody>
           </table>
-
         </div>
-      </div>
-    </Transition>
-  </div>
+    </template>
+  </AppDialog>
 </template>
 
-<style>
-.bg-dialog {
-  background: rgba(217, 217, 217, 0.50);
-}
-</style>
