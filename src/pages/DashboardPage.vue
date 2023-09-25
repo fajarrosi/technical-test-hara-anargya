@@ -22,10 +22,31 @@ const rows = ref([
   { id:1,user: 'User B',date:'17/02/2023',email:'email0',job:'job0',country:'country0',action:'act0'},
   { id:1,user: 'User C',date:'17/02/2023',email:'email0',job:'job0',country:'country0',action:'act0'},
 ])
+const columns2 = ref([
+  { label : 'Date Of Birth'},
+  { label : 'Job'},
+  { label : 'Country'},
+])
+
+const rows2 = ref([
+  { label:'Date Of Birth',value:'value0'},
+  { label:'value',value:'value0'},
+  { label:'Country',value:'value0'},
+])
+
+const show = ref(true)
+const openDetail = row => {
+  show.value = true
+  console.log('row',row)
+}
+
+const getImage = name => {
+  return new URL(`../assets/${name}`, import.meta.url).href
+}
 </script>
 
 <template>
-  <div class="flex flex-col gap-y-[31px]">
+  <div class="flex flex-col gap-y-[31px] pt-[30px] px-9">
     <div class="flex gap-x-[23px]">
       <div class="grow rounded-[10px] shadow-sm card" 
       v-for="(card,index) in cards" :key="index">
@@ -66,18 +87,62 @@ const rows = ref([
         <tbody>
           <tr v-for="(row,index) in rows" :key="index" class="shadow-sm text-xs">
             <td class="text-center bg-white py-[18px] text-content-table"> {{ index + 1 }}</td>
-            <td class="text-center bg-white py-[18px] font-medium text-black-300"> {{ row.user }}</td>
+            <td class="text-center bg-white py-[18px] "> 
+              <div class="flex gap-x-2 items-center justify-center">
+                <img :src="getImage('test.png')" class="rounded-full w-6 h-6">
+                <div class="font-medium text-black-300">
+                  {{ row.user }}
+                </div>
+              </div>
+            </td>
             <td class="text-center bg-white py-[18px] text-content-table"> {{ row.date }}</td>
             <td class="text-center bg-white py-[18px] font-medium text-black-300"> {{ row.email }}</td>
             <td class="text-center bg-white py-[18px] text-content-table"> {{ row.job }}</td>
             <td class="text-center bg-white py-[18px] font-medium text-black-300"> {{ row.country }}</td>
             <td class="text-center bg-white py-[18px]"> 
-              <div class="rounded bg-white shadow-sm text-black-300 inline-flex py-1 px-4 font-medium cursor-pointer hover:bg-icon-card">View Detail</div>
+              <div class="rounded bg-white shadow-sm text-black-300 inline-flex py-1 px-4 font-medium cursor-pointer hover:bg-icon-card" @click="openDetail(row)">View Detail</div>
             </td>
-            
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+
+  <div class="fixed top-0 bottom-0 left-0 right-0 z-20 bg-dialog p-6 flex items-center justify-center" :class="show ? '' : 'hidden'">
+    <Transition name="bounce">
+      <div class="bg-white rounded shadow-sm card" v-if="show">
+        <div class="flex justify-end pr-2 pt-3">
+          <Icon icon="material-symbols:close" class="cursor-pointer font-medium text-red-500" @click.stop="show = false"/>
+        </div>
+        <div class="gap-x-8 px-9 py-[26px]">
+          <div class="flex mb-8">
+            <img :src="getImage('test.png')" class="rounded-full w-[150px] h-[150px]">
+            <div class="flex flex-col text-black-300 items-center">
+              <div class="font-medium text-[40px]">Nama User</div>
+              <div class="font-medium text-xl">user@gmaill.com</div>
+              <div class="font-medium text-xl">08123456789</div>
+            </div>
+          </div>
+
+          <table class="w-full border-separate border border-slate-400">
+            <tbody>
+              <tr v-for="(row,index) in rows2" :key="index" class="text-xs">
+                <td class="text-center py-[18px] text-content-table bg-[#FAFBFC] w-[100px]"> 
+                  {{ row.label }}
+                </td>
+                <td class="text-center bg-white py-[18px] text-content-table"> {{ row.value }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </Transition>
+  </div>
 </template>
+
+<style>
+.bg-dialog {
+  background: rgba(217, 217, 217, 0.50);
+}
+</style>
