@@ -5,6 +5,7 @@ import { getIcon } from '@/methods/GeneralMethods';
 const menus = ref([
   { label: 'Dashboard', icon:'dashboard' },
   { label: 'Overview', icon:'overview' },
+  { label: 'Province', icon:'overview' },
 ])
 
 </script>

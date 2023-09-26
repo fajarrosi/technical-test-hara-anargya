@@ -16,6 +16,11 @@ const router = createRouter({
           path: 'overview',
           name: 'Overview',
           component: () => import('../pages/OverviewPage.vue')
+        },
+        {
+          path: 'province',
+          name: 'Province',
+          component: () => import('../pages/ProvincePage.vue')
         }
       ]
     },

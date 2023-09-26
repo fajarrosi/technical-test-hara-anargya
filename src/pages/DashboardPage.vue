@@ -2,6 +2,7 @@
 import { getIcon } from '@/methods/GeneralMethods';
 import { ref,onMounted } from 'vue'
 import AppDialog from '../components/AppDialog.vue';
+import dayjs from 'dayjs'
 
 const cards = ref([
   { status: 'Pending', total:'2.480,30', percentage:'2,15',isincrease:true,date:'Last Month'},
@@ -32,10 +33,6 @@ const getData = async(url) => {
   }
 }
 
-const getDate = date => {
-  return `${date.split('-')[2].split('T')[0]}/${date.split('-')[1]}/${date.split('-')[0]}`
-}
-
 onMounted(()=>{
   loading.value = true
   getData('https://api.slingacademy.com/v1/sample-data/users')
@@ -44,10 +41,9 @@ onMounted(()=>{
       return {
         ...el,
         fullname : el.first_name + el.last_name,
-        date_of_birth: getDate(el.date_of_birth)
+        date_of_birth: dayjs(el.date_of_birth).format('DD/MM/YYYY')
       }
     })
-    console.log('res',res)
     loading.value = false
   })
   .catch(err=>{
