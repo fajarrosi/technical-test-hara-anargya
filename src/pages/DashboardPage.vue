@@ -1,7 +1,8 @@
 <script setup>
 import { getIcon } from '@/methods/GeneralMethods';
-import { ref } from 'vue'
+import { ref,onMounted } from 'vue'
 import AppDialog from '../components/AppDialog.vue';
+
 const cards = ref([
   { status: 'Pending', total:'2.480,30', percentage:'2,15',isincrease:true,date:'Last Month'},
   { status: 'Paid', total:'84.310,0',percentage:'1,10',isincrease:false,date:'Last Month'},
@@ -18,36 +19,62 @@ const columns = ref([
   { label : 'Action'},
 ])
 
-const rows = ref([
-  { id:1,user: 'User A',date:'17/02/2023',email:'email0',job:'job0',country:'country0',action:'act0'},
-  { id:1,user: 'User B',date:'17/02/2023',email:'email0',job:'job0',country:'country0',action:'act0'},
-  { id:1,user: 'User C',date:'17/02/2023',email:'email0',job:'job0',country:'country0',action:'act0'},
-])
-const columns2 = ref([
-  { label : 'Date Of Birth'},
-  { label : 'Job'},
-  { label : 'Country'},
-])
+const rows = ref([])
 
-const rows2 = ref([
-  { label:'Date Of Birth',value:'value0'},
-  { label:'value',value:'value0'},
-  { label:'Country',value:'value0'},
-])
+const loading = ref(false)
 
-const show = ref(true)
-const openDetail = row => {
-  show.value = true
-  console.log('row',row)
+const getData = async(url) => {
+  try {
+    const response = await fetch(url)
+    return response.json()
+  } catch (error) {
+    return error
+  }
 }
 
-const getImage = name => {
-  return new URL(`../assets/${name}`, import.meta.url).href
+const getDate = date => {
+  return `${date.split('-')[2].split('T')[0]}/${date.split('-')[1]}/${date.split('-')[0]}`
+}
+
+onMounted(()=>{
+  loading.value = true
+  getData('https://api.slingacademy.com/v1/sample-data/users')
+  .then(res=>{
+    rows.value = res.users.map(el=> {
+      return {
+        ...el,
+        fullname : el.first_name + el.last_name,
+        date_of_birth: getDate(el.date_of_birth)
+      }
+    })
+    console.log('res',res)
+    loading.value = false
+  })
+  .catch(err=>{
+    console.log('err',err)
+    loading.value = false
+  })
+})
+
+const rows2 = ref([])
+
+const show = ref(false)
+const dataDetail = ref(null)
+const openDetail = row => {
+  show.value = true
+  dataDetail.value = row
+  rows2.value = [
+    { label:'Date Of Birth',value:row.date_of_birth},
+    { label:'Gender',value:row.gender},
+    { label:'Job',value:row.job},
+    { label:'Address',value:`${row.street}, ${row.city}, ${row.zipcode}, ${row.state}`},
+    { label:'Country',value:row.country},
+  ]
 }
 </script>
 
 <template>
-  <div class="flex flex-col gap-y-[31px] pt-[30px] px-9">
+  <div class="flex flex-col gap-y-[31px] py-[30px] px-9">
     <div class="flex gap-x-[23px]">
       <div class="grow rounded-[10px] shadow-sm card" 
       v-for="(card,index) in cards" :key="index">
@@ -85,18 +112,23 @@ const getImage = name => {
             class="font-semibold text-xs text-[#7C7C7C] py-[18px]">{{ column.label }}</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody v-if="loading">
+          <tr class="shadow-sm">
+            <td class="text-center bg-white py-[18px] font-medium text-black-300" colspan="7">Loading..</td>
+          </tr>
+        </tbody>
+        <tbody v-else>
           <tr v-for="(row,index) in rows" :key="index" class="shadow-sm text-xs">
-            <td class="text-center bg-white py-[18px] text-content-table"> {{ index + 1 }}</td>
+            <td class="text-center bg-white py-[18px] text-content-table px-4"> {{ row.id }}</td>
             <td class="text-center bg-white py-[18px] "> 
-              <div class="flex gap-x-2 items-center justify-center">
-                <img :src="getImage('test.png')" class="rounded-full w-6 h-6">
+              <div class="flex gap-x-2 items-center">
+                <img :src="row.profile_picture" class="rounded-full w-6 h-6">
                 <div class="font-medium text-black-300">
-                  {{ row.user }}
+                  {{ row.fullname }}
                 </div>
               </div>
             </td>
-            <td class="text-center bg-white py-[18px] text-content-table"> {{ row.date }}</td>
+            <td class="text-center bg-white py-[18px] text-content-table"> {{ row.date_of_birth }}</td>
             <td class="text-center bg-white py-[18px] font-medium text-black-300"> {{ row.email }}</td>
             <td class="text-center bg-white py-[18px] text-content-table"> {{ row.job }}</td>
             <td class="text-center bg-white py-[18px] font-medium text-black-300"> {{ row.country }}</td>
@@ -113,11 +145,11 @@ const getImage = name => {
     <template #default>
       <div class="gap-x-8 px-9 py-[26px]">
           <div class="flex mb-8">
-            <img :src="getImage('test.png')" class="rounded-full w-[150px] h-[150px]">
+            <img :src="dataDetail.profile_picture" class="rounded-full w-[150px] h-[150px] mr-3">
             <div class="flex flex-col text-black-300 items-center">
-              <div class="font-medium text-[40px]">Nama User</div>
-              <div class="font-medium text-xl">user@gmaill.com</div>
-              <div class="font-medium text-xl">08123456789</div>
+              <div class="font-medium text-[40px]">{{dataDetail.fullname}}</div>
+              <div class="font-medium text-xl">{{dataDetail.email}}</div>
+              <div class="font-medium text-xl">{{dataDetail.phone}}</div>
             </div>
           </div>
 
